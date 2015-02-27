@@ -143,19 +143,60 @@ void writeFile(void *memory) {
 
 //dumpMemory will display the memory contents starting at offset for a number of bytes equal to length
 void dumpMemory(void *memory, unsigned offset, unsigned length){
+	unsigned int x, z;
+	unsigned int rowLength = 0x10;
+
+	length--; //Decrease length to display the entered value
+
+	for(x = offset; x < (offset+length); x += rowLength) {
+		printf("%4X\t", x);
+		for(z = x; z < (x + rowLength); z++) {
+			printf("%2X ", *((char *) memory + z));
+			if(z == (offset+length))
+				break;
+		}
+
+		printf("\n\t");
 	
+		for(z = x; z < (x+rowLength); z++) {
+			if(isprint((int) *((char *) memory + z)))
+				printf(" %c ", *((char *) memory + z)); //print value at position in memory
+			else
+				printf(" . "); //if the position is blank, print .
+
+			if(z == (offset + length))
+				break; //Exit if z = end of entered length
+		}
+
+		printf("\n");
+		if(z == length)
+			break;
+	}
 }
 
 //memoryModify will allow the user to change the value at a specific memory location
 void memoryModify(void *memory){
-	int location = 0, value = 0;
-
-	printf("\nmemoryModify will load a location and let you change the HEX value in it\n");
-	printf("Enter a location in memory: ");
-	scanf (" %d", &location);
-
-	value = *memory[location];
-	printf("\n%d	%x	> ", location, value);
+	unsigned offset;
+	char value;
+	
+	printf("\nmemoryModify will load a location and let you change the HEX value in it");
+	printf("\nA period ('.') will end it");
+	printf("\nEnter an offset: "); //Get an offset to start the modifying at
+	scanf("%x", &offset);
+	printf("Enter a value: "); //Enter a value for the offset
+	
+	while(1){
+		printf("%4X > ", offset);
+		while(getchar() != '\n');
+		
+		if ((value = getchar()) == '.') //Exit if value = .
+			break;
+		
+		*((char *) memory+offset) = value; //Put the value in the offset
+		
+		if(++offset == MAX_MEMORY) //Check if the next offset position is the end of the memory
+			break;
+	}
 }
 
 void goRun(){
