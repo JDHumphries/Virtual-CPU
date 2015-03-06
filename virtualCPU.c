@@ -259,7 +259,7 @@ void displayRegisters(){
 }
 
 void trace(){
-	printf("Trace runs fetch\n\nAnd Displays Registers for now");
+	printf("Trace runs fetch\nAnd Displays Registers for now\n\n");
 	displayRegisters();
 	fetch();
 }
