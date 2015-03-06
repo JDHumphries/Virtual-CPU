@@ -16,3 +16,4 @@ Mar. 06, 2015
  - Parsed the Instruction Register in function DisplayRegisters
  - trace calls fetch and displayRegisters
  - new line fix in trace
+ - replaced virtualCPU.c with main.c (essentially a name change)
