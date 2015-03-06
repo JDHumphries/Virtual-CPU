@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define MAX_MEMORY 16384 //4000 in hex
 #define MAX_INPUT 128
@@ -21,7 +22,7 @@
 
 static unsigned long mar; //Memory Address Register
 static unsigned long mbr; //Memory Buffer Register
-static unsigned long intrR; //Instruction Register
+static unsigned long instrR; //Instruction Register
 static unsigned long ccr; //Condition Codes Register
 static unsigned long registers[NUM_REG]; //Registers
 
@@ -37,7 +38,7 @@ void memoryModify(void *memory);
 
 void goRun();
 void displayRegisters();
-void trace();
+void trace(void *memory);
 void reset();
 
 unsigned getIR0(unsigned long instrR);
@@ -85,7 +86,7 @@ int main(int argc, char **argv) {
 			break;
 		case 't':
 		case 'T':
-			trace();
+			trace(*memory);
 			break;
 		case 'w':
 		case 'W':
@@ -228,10 +229,10 @@ void displayRegisters(){
 	unsigned instrR0 = getIR0(instrR);
 	unsigned instrR1 = getIR1(instrR);
 	//Display named registers
-	printf("Memory Address Register: %x\n", mar);
-	printf("Memory Buffer Register: %x\n", mbr);
-	printf("Instruction Register0: %x\n", instrR0);
-	printf("Instruction Register1: %x\n\n", instrR1);
+	printf("Memory Address Register: X\n", mar);
+	printf("Memory Buffer Register: %X\n", mbr);
+	printf("Instruction Register0: %X\n", instrR0);
+	printf("Instruction Register1: %X\n\n", instrR1);
 	
 	//Display CCR and its flags
 	printf("Condition Code Register:\n");
@@ -244,24 +245,24 @@ void displayRegisters(){
 	printf("Stop Flag: %d\n\n", stopFlag);
 	
 	//Display list of registers
-	printf("Generic Register List:\n")
-	for (int z = 0; z < NUM_REG; z++){
+	printf("Generic Register List:\n");
+	int z = 0;
+	for (z = 0; z < NUM_REG; z++){
 		if(z == STACK_POINTER)
 			break;
 			
-		printf("R%d: %x\n", z, registers[z]);
+		printf("R%d: %X\n", z, registers[z]);
 	}
 	
 	//Display special registers
-	printf("Stack Pointer: %x\n", registers[STACK_POINTER]);
-	printf("Link Register: %x\n", registers[LINK_POINTER]);
-	printf("Program Counter: %x\n\n", registers[PROG_COUNTER]);
+	printf("Stack Pointer: %X\n", registers[STACK_POINTER]);
+	printf("Link Register: %X\n", registers[LINK_REGISTER]);
+	printf("Program Counter: %X\n\n", registers[PROG_COUNTER]);
 }
 
-void trace(){
+void trace(void *memory){
 	printf("Trace runs fetch\nAnd Displays Registers for now\n\n");
-	displayRegisters();
-	fetch();
+	fetch(memory);
 }
 
 void reset(){
@@ -269,12 +270,13 @@ void reset(){
 	mar = 0;
 	mbr = 0;
 	ccr = 0;
-	intrR = 0;
+	instrR = 0;
 	instrFlag = 0;
 	stopFlag = 0;
 	
 	//Reset the registers
-	for (int z = 0; z < NUM_REG; z++)
+	int z = 0;
+	for (z = 0; z < NUM_REG; z++)
 		registers[z] = 0;
 }
 
@@ -287,5 +289,5 @@ unsigned getIR1(unsigned long instrR){
 }
 
 void fetch(void *memory){
-	
+	displayRegisters();
 }
