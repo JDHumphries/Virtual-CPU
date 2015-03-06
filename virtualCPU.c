@@ -165,9 +165,9 @@ void dumpMemory(void *memory, unsigned offset, unsigned length){
 	length--; //Decrease length to display the entered value
 
 	for(x = offset; x < (offset+length); x += rowLength) {
-		printf("%4X\t", x);
+		printf("%4x\t", x);
 		for(z = x; z < (x + rowLength); z++) {
-			printf("%2X ", *((char *) memory + z));
+			printf("%2x ", *((char *) memory + z));
 			if(z == (offset+length))
 				break;
 		}
@@ -220,10 +220,14 @@ void goRun(){
 }
 
 void displayRegisters(){
+	
+	unsigned instrR0 = getIR0(instrR);
+	unsigned instrR1 = getIR1(instrR);
 	//Display named registers
-	printf("Memory Address Register: %x\n" mar);
-	printf("Memory Buffer Register: %x\n" mbr);
-	printf("Instruction Register: %x\n\n" ir);
+	printf("Memory Address Register: %x\n", mar);
+	printf("Memory Buffer Register: %x\n", mbr);
+	printf("Instruction Register0: %x\n", instrR0);
+	printf("Instruction Register1: %x\n\n", instrR1);
 	
 	//Display CCR and its flags
 	printf("Condition Code Register:\n");
@@ -266,4 +270,12 @@ void reset(){
 	//Reset the registers
 	for (int z = 0; z < NUM_REG; z++)
 		registers[z] = 0;
+}
+
+unsigned getIR0(unsigned long instrR){
+	return instrR >> 16;
+}
+
+unsigned getIR1(unsigned long instrR){
+	return instrR & 0x000FFFF;
 }
