@@ -13,3 +13,4 @@ Mar. 06, 2015
  - Zero Registers implemented and functional
  - Dump Registers implemented and not finished
  - General comments added
+ - Parsed the Instruction Register in function DisplayRegisters
