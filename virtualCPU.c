@@ -9,8 +9,24 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_MEMORY 16384
+#define MAX_MEMORY 16384 //4000 in hex
 #define MAX_INPUT 128
+#define STACK_POINTER 13 //Stack pointer, D in hex
+#define LINK_REGISTER 14 //Link register, E in hex
+#define PROG_COUNTER 15 //Program Counter, F in hex
+#define NUM_REG 16 //Number of Registers, 10 in hex
+#define SIGN_FLAG 4 //Sign flag for ccr
+#define ZERO_FLAG 2 //Zero flag for ccr
+#define CARRY_FLAG 1 //Carry flag for ccr
+
+static unsigned long mar; //Memory Address Register
+static unsigned long mbr; //Memory Buffer Register
+static unsigned long intrR; //Instruction Register
+static unsigned long ccr; //Condition Codes Register
+static unsigned long registers[NUM_REG]; //Registers
+
+static bool instrFlag = 0; //Instruction Register Flag
+static bool stopFlag = 0; //Stop Flag
 
 //Implemented Functions
 void writeFile(void *memory);
@@ -204,7 +220,34 @@ void goRun(){
 }
 
 void displayRegisters(){
-	printf("Display Registers is not implemented yet\n\n");
+	//Display named registers
+	printf("Memory Address Register: %x\n" mar);
+	printf("Memory Buffer Register: %x\n" mbr);
+	printf("Instruction Register: %x\n\n" ir);
+	
+	//Display CCR and its flags
+	printf("Condition Code Register:\n");
+	printf("\tSign: %d\n", SIGN_FLAG);
+	printf("\tZero: %d\n", ZERO_FLAG);
+	printf("\tCarry: %d\n\n", CARRY_FLAG);
+	
+	//Display flags
+	printf("Instruction Flag: %d\n", instrFlag);
+	printf("Stop Flag: %d\n\n", stopFlag);
+	
+	//Display list of registers
+	printf("Generic Register List:\n")
+	for (int z = 0; z < NUM_REG; z++){
+		if(z == STACK_POINTER)
+			break;
+			
+		printf("R%d: %x\n", z, registers[z]);
+	}
+	
+	//Display special registers
+	printf("Stack Pointer: %x\n", registers[STACK_POINTER]);
+	printf("Link Register: %x\n", registers[LINK_POINTER]);
+	printf("Program Counter: %x\n\n", registers[PROG_COUNTER]);
 }
 
 void trace(){
@@ -212,5 +255,15 @@ void trace(){
 }
 
 void reset(){
-	printf("Reset is not implemented yet\n\n");
+	//Zero the registers
+	mar = 0;
+	mbr = 0;
+	ccr = 0;
+	intrR = 0;
+	instrFlag = 0;
+	stopFlag = 0;
+	
+	//Reset the registers
+	for (int z = 0; z < NUM_REG; z++)
+		registers[z] = 0;
 }
