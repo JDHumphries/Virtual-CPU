@@ -1,5 +1,5 @@
 # Virtual-PC
-A basic virtual pc created in C
+A basic virtual CPU created in C
 
 Feb. 25, 2015
  - Repository created
@@ -14,3 +14,5 @@ Mar. 06, 2015
  - Dump Registers implemented and not finished
  - General comments added
  - Parsed the Instruction Register in function DisplayRegisters
+ - trace calls fetch and displayRegisters
+ - new line fix in trace
