@@ -9,3 +9,7 @@ Feb. 26, 2015
  - Memory Dump implemented and functional
  - Memory Modify implemented and functional
 
+Mar. 06, 2015
+ - Zero Registers implemented and functional
+ - Dump Registers implemented and not finished
+ - General comments added
