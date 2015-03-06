@@ -28,17 +28,21 @@ static unsigned long registers[NUM_REG]; //Registers
 static bool instrFlag = 0; //Instruction Register Flag
 static bool stopFlag = 0; //Stop Flag
 
-//Implemented Functions
+
 void writeFile(void *memory);
 int loadFile(void *memory, unsigned int max);
 void printHelp();
 void dumpMemory(void *memory, unsigned offset, unsigned length);
 void memoryModify(void *memory);
-//Unimplemented Functions
+
 void goRun();
 void displayRegisters();
 void trace();
 void reset();
+
+unsigned getIR0(unsigned long instrR);
+unsigned getIR1(unsigned long instrR);
+void fetch(void *memory);
 
 int main(int argc, char **argv) {
 	unsigned char memory[MAX_MEMORY];
@@ -255,7 +259,9 @@ void displayRegisters(){
 }
 
 void trace(){
-	printf("Trace is not implemented yet\n\n");
+	printf("Trace runs fetch\n\nAnd Displays Registers for now");
+	displayRegisters();
+	fetch();
 }
 
 void reset(){
@@ -278,4 +284,8 @@ unsigned getIR0(unsigned long instrR){
 
 unsigned getIR1(unsigned long instrR){
 	return instrR & 0x000FFFF;
+}
+
+void fetch(void *memory){
+	
 }
