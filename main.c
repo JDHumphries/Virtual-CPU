@@ -8,27 +8,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
-#define MAX_MEMORY 16384 //4000 in hex
+#define MAX_MEMORY 16384 		//4000 in hex
 #define MAX_INPUT 128
-#define STACK_POINTER 13 //Stack pointer, D in hex
-#define LINK_REGISTER 14 //Link register, E in hex
-#define PROG_COUNTER 15 //Program Counter, F in hex
-#define NUM_REG 16 //Number of Registers, 10 in hex
-#define SIGN_FLAG 4 //Sign flag for ccr
-#define ZERO_FLAG 2 //Zero flag for ccr
-#define CARRY_FLAG 1 //Carry flag for ccr
+#define STACK_POINTER 13 			//Stack pointer, D in hex
+#define LINK_REGISTER 14 				//Link register, E in hex
+#define PROG_COUNTER 15 			//Program Counter, F in hex
+#define NUM_REG 16 						//Number of Registers, 10 in hex
+#define SIGN_FLAG 4 						//Sign flag for ccr
+#define ZERO_FLAG 2 						//Zero flag for ccr
+#define CARRY_FLAG 1					//Carry flag for ccr
 
-static unsigned long mar; //Memory Address Register
-static unsigned long mbr; //Memory Buffer Register
-static unsigned long instrR; //Instruction Register
-static unsigned long ccr; //Condition Codes Register
-static unsigned long registers[NUM_REG]; //Registers
-
-static bool instrFlag = 0; //Instruction Register Flag
-static bool stopFlag = 0; //Stop Flag
-
+static unsigned long mar; 								//Memory Address Register
+static unsigned long mbr; 								//Memory Buffer Register
+static unsigned long instrR; 							//Instruction Register
+static unsigned long ccr; 								//Condition Codes Register
+static unsigned long registers[NUM_REG]; 	//Registers
+static unsigned instrFlag = 0; 						//Instruction Register Flag
+static unsigned stopFlag = 0; 						//Stop Flag
 
 void writeFile(void *memory);
 int loadFile(void *memory, unsigned int max);
@@ -59,9 +56,9 @@ int main(int argc, char **argv) {
 		case 'd':
 		case 'D':
 			printf("Enter the offset to begin at: ");
-			scanf(" %d", &offset);
+			scanf(" %d ", &offset);
 			printf("Enter how many bytes to view: ");
-			scanf(" %d", &length);
+			scanf(" %d ", &length);
 			dumpMemory(&memory, offset, length);
 			break;
 		case 'g':
@@ -86,7 +83,7 @@ int main(int argc, char **argv) {
 			break;
 		case 't':
 		case 'T':
-			trace(*memory);
+			trace(&memory);
 			break;
 		case 'w':
 		case 'W':
@@ -225,7 +222,7 @@ void goRun(){
 }
 
 void displayRegisters(){
-	
+	int z = 0;
 	unsigned instrR0 = getIR0(instrR);
 	unsigned instrR1 = getIR1(instrR);
 	//Display named registers
@@ -236,9 +233,9 @@ void displayRegisters(){
 	
 	//Display CCR and its flags
 	printf("Condition Code Register:\n");
-	printf("\tSign: %d\n", SIGN_FLAG);
-	printf("\tZero: %d\n", ZERO_FLAG);
-	printf("\tCarry: %d\n\n", CARRY_FLAG);
+	printf("   Sign: %d\n", SIGN_FLAG);
+	printf("   Zero: %d\n", ZERO_FLAG);
+	printf("   Carry: %d\n\n", CARRY_FLAG);
 	
 	//Display flags
 	printf("Instruction Flag: %d\n", instrFlag);
@@ -246,14 +243,17 @@ void displayRegisters(){
 	
 	//Display list of registers
 	printf("Generic Register List:\n");
-	int z = 0;
+	
 	for (z = 0; z < NUM_REG; z++){
 		if(z == STACK_POINTER)
 			break;
+		
+		if(z%4 == 0)
+			printf("\n");
 			
-		printf("R%d: %X\n", z, registers[z]);
+		printf("R%d: %X\t", z, registers[z]);
 	}
-	
+	printf("\n");
 	//Display special registers
 	printf("Stack Pointer: %X\n", registers[STACK_POINTER]);
 	printf("Link Register: %X\n", registers[LINK_REGISTER]);
@@ -261,11 +261,14 @@ void displayRegisters(){
 }
 
 void trace(void *memory){
-	printf("Trace runs fetch\nAnd Displays Registers for now\n\n");
-	fetch(memory);
+	printf("Trace runs fetch And Displays Registers for now\n\n");
+	fetch(&memory);
+	printf("\n\n");
+	displayRegisters();
 }
 
 void reset(){
+	int z = 0;
 	//Zero the registers
 	mar = 0;
 	mbr = 0;
@@ -275,7 +278,6 @@ void reset(){
 	stopFlag = 0;
 	
 	//Reset the registers
-	int z = 0;
 	for (z = 0; z < NUM_REG; z++)
 		registers[z] = 0;
 }
@@ -289,5 +291,27 @@ unsigned getIR1(unsigned long instrR){
 }
 
 void fetch(void *memory){
-	displayRegisters();
+	unsigned cycles, registerSize = 32, z = 0;
+	cycles = registerSize / ((int)sizeof(char));
+	
+	//Move Program Counter into MAR
+	mar = registers[PROG_COUNTER];
+	
+	//Move memory at MAR into MBR
+	for (z = 0; z < cycles; z++){
+		mbr = mbr << 8;
+		mbr += *((unsigned char*)memory + (mar + z));
+	}
+	
+	//Move MBR into the Instruction Register
+	instrR = mbr;
+	
+	//Move instruction into Program Counter
+	registers[PROG_COUNTER] += registerSize;
+	
+	printf("\nMemory Address Register: %X", mar);
+	printf("\nMemory Buffer Register: %X", mbr);
+	printf("\nInstruction Register: %X", instrR);
+	printf("\nCondition Code Register: %X\n", ccr);
+	printf("\nProgram Counter: %X\n\n",  PROG_COUNTER);
 }
