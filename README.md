@@ -1,4 +1,4 @@
-# Virtual-PC
+# Virtual-CPU
 A basic virtual CPU created in C
 
 Feb. 25, 2015
