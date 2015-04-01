@@ -302,6 +302,8 @@ void instructionCycles(void *memory){
 
 void execute(void *memory){
 	unsigned z = 0; //For looping when storing
+
+	//	DATA PROCESSING INSTRUCTION
 	if(DATA_PROCESS){
 		if(AND_DATA)
 			registers[RD] &= RN;
@@ -338,6 +340,8 @@ void execute(void *memory){
 			registers[RD] &= !RN;
 		else if(MVN_DATA)
 			registers[RD] != RN;
+
+	//	LOAD AND STORE INSRTUCTIONS
 	}else if(LOAD_STORE){
 		mar = registers[RN];
 
@@ -346,7 +350,7 @@ void execute(void *memory){
 				mbr = *((unsigned char *)memory + mar);
 				registers[RD] = mbr;
 			}else{ //Load a double word
-				for(z = 0; < 4/((int)sizeof(char)); z++, mar++){
+				for(z = 0; z < 4/((int)sizeof(char)); z++, mar++){
 					mbr << 8; //Shift by a byte
 					mbr += *((unsigned char *)memory + mar);
 				}
@@ -362,6 +366,8 @@ void execute(void *memory){
 				*((unsigned char*)memory + mar) = (unsigned char)mbr & 0xFF;
 			}
 		}
+
+	//	IMMEDIATE INSTRUCTION
 	}else if(IMMEDIATE){
 		//Each option include an operation involving RD
 		//Then it checks the appropiate flags
@@ -383,19 +389,55 @@ void execute(void *memory){
 			CARRY_FLAG = isCarry(~registers[RD], ~IMM_VALUE, 1);
 			registers[RD] = alu;
 		}
+
+	//	CONDITIONAL BRANCH INSTRUCTION
 	}else if(CON_BRANCH){
-		
+		if(EQ){
+                        if(ZERO_FLAG) //Equal
+                                PROG_COUNTER += (signed)COND_ADDR;
+		}else if(NE){
+                        if(!ZERO_FLAG) //Not Equal
+                                PROG_COUNTER += (signed)COND_ADDR;
+		}else if(CS){
+			if(CARRY_FLAG) //Unsigned higher or same
+				PROG_COUNTER += (signed)COND_ADDR;
+		}else if(CC){
+			if(!CARRY_FLAG) //Unsigned lower
+				PROG_COUNTER += (signed)COND_ADDR;
+		}else if(MI){
+			if(SIGN_FLAG) //Negative
+				PROG_COUNTER += (signed)COND_ADDR;
+		}else if(PL){
+			if(!SIGN_FLAG) //Postive
+				PROG_COUNTER += (signed)COND_ADDR;
+		}else if(HI){ 
+			if(CARRY_FLAG && !SIGN_FLAG) //Unsigned higher
+				PROG_COUNTER += (signed)COND_ADDR;
+		}else if(LS){
+			if(!CARRY_FLAG && SIGN_FLAG) //Unsigned lower or same
+				PROG_COUNTER += (signed)COND_ADDR;
+		}else if(AL){
+			PROG_COUNTER += (signed)COND_ADDR; //Always
+		}else
+			printf("\nBad Option\n");
+
+	//	PUSH AND PULL INSTRUCTIONS
 	}else if(PUSH_PULL){
 		printf("\nPush/Pull\n");
-	}else if(BRANCH){
-		printf("\nBranch\n");
+
+	//	UNCONDITIONAL BRANCH INSTRUCTION
+	}else if(UN_BRANCH){
+		if(LINK_BIT)
+			PROG_COUNTER = LINK_REGISTER;
+		
+		PROG_COUNTER = OFF_12;
+
+	//	STOP INSTRUCTION
 	}else if(STOP){
 		printf("\nStop\n");
 		stopFlag = 1;
 	}else
-		printf("\n\nBad option\n\n");
-	
-	
+		printf("\n\nBad option\n\n");	
 } //End of execute
 
 //Check Zero and Sign Flags function
@@ -406,6 +448,7 @@ void flagsCheck(unsigned long alu){
 		ZERO_FLAG = 0;
 
 	SIGN_FLAG = alu & SUB_VALUE;
+	return;
 }//End of flagsCheck
 
 //isCarry checks to see if a carry is generated

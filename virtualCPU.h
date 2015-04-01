@@ -17,16 +17,20 @@
 #define IMMEDIATE	FORMAT & 2 | 3	//01X00000
 #define CON_BRANCH	FORMAT & 4	//10000000
 #define PUSH_PULL	FORMAT & 5	//10100000
-#define BRANCH		FORMAT & 6	//11000000
+#define UN_BRANCH	FORMAT & 6	//11000000
 #define STOP		FORMAT & 7	//11100000
 
 #define OPERATION	((currentInstruction >> 8) & 15)
 #define RN		((currentInstruction >> 4) & 15)
 #define RD		currentInstruction & 15
 #define OPCODE		((currentInstruction >> 12) & 3)
-#define IMM_VALUE	((currentInstruction >> 4) & 255)
+#define IMM_VALUE	((currentInstruction >> 4) & 0xFF)
+#define COND		((currentInstruction >> 8) & 0xF)
+#define COND_ADDR	currentInstruction & 0xFF;
 #define L_BIT		((currentInstruction >> 11) & 1)
 #define B_BIT		((currentInstruction >> 10) & 1)
+#define LINK_BIT	((currentInstruction >> 12) & 1)
+#define OFF_12		currentInstruction & 0xFFF
 
 //Data Processing codes
 #define AND_DATA	0 & OPERATION
@@ -51,6 +55,17 @@
 #define CMP	1 & OPCODE	//01
 #define ADD	2 & OPCODE	//10
 #define SUB	3 & OPCODE	//11
+
+//Conditional Branch Code
+#define EQ	0 == COND
+#define NE	1 == COND
+#define CS	2 == COND
+#define CC	3 == COND
+#define MI	4 == COND
+#define PL	5 == COND
+#define HI	8 == COND
+#define LS	9 == COND
+#define AL	0xE == COND
 
 unsigned long mar; 			//Memory Address Register
 unsigned long mbr; 			//Memory Buffer Register
