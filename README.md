@@ -26,3 +26,4 @@ Apr. 1, 2015
  - Began work on the execute function for running instructions
  - displayRegisters function has had its printout arrangement changed
  - Minor corrections to code
+ - IMMEDIATE and LOAD_STORE options are working in execute function
