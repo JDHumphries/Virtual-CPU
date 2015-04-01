@@ -27,3 +27,4 @@ Apr. 1, 2015
  - displayRegisters function has had its printout arrangement changed
  - Minor corrections to code
  - IMMEDIATE and LOAD_STORE options are working in execute function
+ - UN_BRANCH and CON_BRANCH options are working in execute function
