@@ -5,7 +5,7 @@
 #define MAX_MEMORY 	0x4000
 #define MAX_INPUT 	128
 #define MAX32		0xFFFFFFFF
-#define SUB_VALUE	0xFFFFFFFF
+#define SUB_VALUE	0x800000000
 #define STACK_POINTER 	registers[0xD]
 #define LINK_REGISTER 	registers[0xE]
 #define PROG_COUNTER 	registers[0xF]
@@ -54,6 +54,7 @@ unsigned long mar; 			//Memory Address Register
 unsigned long mbr; 			//Memory Buffer Register
 unsigned long instrR; 			//Instruction Register
 unsigned long ccr; 			//Condition Codes Register
+unsigned long alu;
 unsigned long registers[NUM_REG]; 	//Registers
 unsigned instrFlag = 0; 		//Instruction Register Flag
 unsigned stopFlag = 0; 			//Stop Flag

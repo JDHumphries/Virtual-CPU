@@ -376,13 +376,13 @@ void execute(void *memory){
 				SIGN_FLAG = 0;
 			
 			if(registers[RD] - IMM_VALUE == 0)
-				ZERO_FLAG = 1; //Set zero flag is value is 0
+				ZERO_FLAG = 1; //Set zero flag if value is 0
 			else
 				ZERO_FLAG = 0;
 			
 			if(registers[RD] + IMM_VALUE > MAX_VALUE){
 				registers[RD] = IMM_VALUE - SUB_VALUE;
-				CARRY_FLAG = 1; //Set carry flag is there is a carry
+				CARRY_FLAG = 1; //Set carry flag if there is a carry
 			}else{
 
 				registers[RD] += IMM_VALUE;
@@ -393,11 +393,11 @@ void execute(void *memory){
 			registers[RD] -= IMM_VALUE;
 		}
 	}else if(CON_BRANCH){
-		
+		printf("\nConditional Branch\n");
 	}else if(PUSH_PULL){
-		
+		printf("\nPush/Pull\n");
 	}else if(BRANCH){
-		
+		printf("\nBranch\n");
 	}else if(STOP){
 		printf("\nStop\n");
 		STOP_FLAG = 1;
@@ -406,6 +406,16 @@ void execute(void *memory){
 	
 	
 } //End of execute
+
+//Check Zero and Sign Flags function
+void flagsCheck(unsigned long alu){
+	if(alu == 0)
+		ZERO_FLAG = 1;
+	else
+		ZERO_FLAG = 0;
+
+	SIGN_FLAG = alu & SUB_VALUE;
+}//End of flagsCheck
 
 //isCarry checks to see if a carry is generated
 int isCarry(unsigned long op1, unsigned long op2, unsigned c){
