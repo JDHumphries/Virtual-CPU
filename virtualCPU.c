@@ -301,6 +301,7 @@ void instructionCycles(void *memory){
 } //End of instructionCycles
 
 void execute(void *memory){
+	unsigned z = 0; //For looping when storing
 	if(DATA_PROCESS){
 		if(AND_DATA)
 			registers[RD] &= RN;
@@ -338,69 +339,59 @@ void execute(void *memory){
 		else if(MVN_DATA)
 			registers[RD] != RN;
 	}else if(LOAD_STORE){
-		
+		mar = registers[RN];
+
+		if(L_BIT){ //LOAD
+			if(B_BIT){ //Load a byte
+				mbr = *((unsigned char *)memory + mar);
+				registers[RD] = mbr;
+			}else{ //Load a double word
+				for(z = 0; < 4/((int)sizeof(char)); z++, mar++){
+					mbr << 8; //Shift by a byte
+					mbr += *((unsigned char *)memory + mar);
+				}
+			}
+		}else{ //STORE
+			mbr = registers[RD];
+			if(B_BIT){ //Store a byte
+				*((unsigned char *)memory + mar) = (unsigned char)mbr & 0xFF;
+			}else{ //Store a double word
+				*((unsigned char*)memory + mar++) = (unsigned char)mbr >> 24 & 0xFF;
+				*((unsigned char*)memory + mar++) = (unsigned char)mbr >> 16 & 0xFF;
+				*((unsigned char*)memory + mar++) = (unsigned char)mbr >> 8 & 0xFF;
+				*((unsigned char*)memory + mar) = (unsigned char)mbr & 0xFF;
+			}
+		}
 	}else if(IMMEDIATE){
+		//Each option include an operation involving RD
+		//Then it checks the appropiate flags
 		if(MOV){
 			registers[RD] = IMM_VALUE;
-			if(IMM_VALUE == 0)
-				ZERO_FLAG = 1;
-			else
-				ZERO_FLAG = 0;
-
-			if(IMM_VALUE < 0)
-				SIGN_FLAG = 1;
-			else
-				SIGN_FLAG = 0;
-
+			flagsCheck(registers[RD]);
 		}else if(CMP){
-			if((registers[RD] - IMM_VALUE) == 0)
-				ZERO_FLAG = 1;
-			else
-				ZERO_FLAG = 0;
-			
-			if((registers[RD] - IMM_VALUE) > 0)
-				CARRY_FLAG = 1;
-			else
-				CARRY_FLAG = 0;
-			
-			if((registers[RD] - IMM_VALUE) < 0)
-				SIGN_FLAG = 1;
-			else
-				SIGN_FLAG = 0;
-
+			alu = ~(registers[RD] + IMM_VALUE) + 1;
+			flagsCheck(alu);
+			CARRY_FLAG = isCarry(registers[RD], ~IMM_VALUE, 0);
 		}else if(ADD){
-			registers[RD] += IMM_VALUE;
-			if(registers[RD] + IMM_VALUE < 0)
-				SIGN_FLAG = 1; //Set sign flag if value less than 0
-			else
-				SIGN_FLAG = 0;
-			
-			if(registers[RD] - IMM_VALUE == 0)
-				ZERO_FLAG = 1; //Set zero flag if value is 0
-			else
-				ZERO_FLAG = 0;
-			
-			if(registers[RD] + IMM_VALUE > MAX_VALUE){
-				registers[RD] = IMM_VALUE - SUB_VALUE;
-				CARRY_FLAG = 1; //Set carry flag if there is a carry
-			}else{
-
-				registers[RD] += IMM_VALUE;
-				CARRY_FLAG = 0;
-			}
-
+			alu = registers[RD] + IMM_VALUE; //Add values
+			flagsCheck(alu);
+			CARRY_FLAG = isCarry(registers[RD], IMM_VALUE, 0);
+			registers[RD] = alu; //Move final value into RD
 		}else if(SUB){
-			registers[RD] -= IMM_VALUE;
+			alu = ~(registers[RD] + IMM_VALUE) + 1;
+			flagsCheck(alu);
+			CARRY_FLAG = isCarry(~registers[RD], ~IMM_VALUE, 1);
+			registers[RD] = alu;
 		}
 	}else if(CON_BRANCH){
-		printf("\nConditional Branch\n");
+		
 	}else if(PUSH_PULL){
 		printf("\nPush/Pull\n");
 	}else if(BRANCH){
 		printf("\nBranch\n");
 	}else if(STOP){
 		printf("\nStop\n");
-		STOP_FLAG = 1;
+		stopFlag = 1;
 	}else
 		printf("\n\nBad option\n\n");
 	

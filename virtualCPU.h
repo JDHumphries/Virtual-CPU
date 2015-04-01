@@ -21,10 +21,12 @@
 #define STOP		FORMAT & 7	//11100000
 
 #define OPERATION	((currentInstruction >> 8) & 15)
-#define RN	((currentInstruction >> 4) & 15)
-#define RD	currentInstruction & 15
-#define OPCODE	((currentInstruction >> 12) & 3)
+#define RN		((currentInstruction >> 4) & 15)
+#define RD		currentInstruction & 15
+#define OPCODE		((currentInstruction >> 12) & 3)
 #define IMM_VALUE	((currentInstruction >> 4) & 255)
+#define L_BIT		((currentInstruction >> 11) & 1)
+#define B_BIT		((currentInstruction >> 10) & 1)
 
 //Data Processing codes
 #define AND_DATA	0 & OPERATION
