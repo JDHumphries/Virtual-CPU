@@ -25,3 +25,4 @@ Apr. 1, 2015
  - Added the isCarry function
  - Began work on the execute function for running instructions
  - displayRegisters function has had its printout arrangement changed
+ - Minor corrections to code
