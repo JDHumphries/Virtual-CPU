@@ -17,3 +17,11 @@ Mar. 06, 2015
  - trace calls fetch and displayRegisters
  - new line fix in trace
  - replaced virtualCPU.c with main.c (essentially a name change)
+
+Apr. 1, 2015
+ - Changed main.c back to virtualCPU.c (another name change)
+ - Moved includes, definitions, and function declarations into a header file
+ - Began changing decimal numbers into hex
+ - Added the isCarry function
+ - Began work on the execute function for running instructions
+ - displayRegisters function has had its printout arrangement changed
